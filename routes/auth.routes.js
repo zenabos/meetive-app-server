@@ -10,10 +10,6 @@ const saltRounds = 10;
 // Require the User model in order to interact with the database
 const User = require("../models/User.model");
 
-// // Require necessary (isLoggedOut and isLiggedIn) middleware in order to control access to specific routes
-// const isLoggedOut = require("../middleware/isLoggedOut");
-// const isLoggedIn = require("../middleware/isLoggedIn");
-
 router.get("/loggedin", (req, res) => {
   res.json(req.user);
 });
@@ -22,14 +18,12 @@ router.post("/signup", isLoggedOut, (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name) {
-    return res
-      .status(400)
-      .json({ errorMessage: "Please provide your name." });
+    return res.status(400).json({ errorMessage: "Please provide your name." });
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   if (!emailRegex.test(email)) {
-    res.status(400).json({ message: 'Provide a valid email address.' });
+    res.status(400).json({ message: "Provide a valid email address." });
     return;
   }
 
@@ -55,7 +49,9 @@ router.post("/signup", isLoggedOut, (req, res) => {
   User.findOne({ email }).then((found) => {
     // If the user is found, send the message email is taken
     if (found) {
-      return res.status(400).json({ errorMessage: "Email address already exist." });
+      return res
+        .status(400)
+        .json({ errorMessage: "Email address already exist." });
     }
 
     // if user is not found, create a new user - start with hashing the password
@@ -71,8 +67,6 @@ router.post("/signup", isLoggedOut, (req, res) => {
         });
       })
       .then((user) => {
-        // Bind the user to the session object
-        req.session.user = user;
         res.status(201).json(user);
       })
       .catch((error) => {
@@ -95,7 +89,7 @@ router.post("/login", isLoggedOut, (req, res, next) => {
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   if (!emailRegex.test(email)) {
-    res.status(400).json({ message: 'Please provide a valid email address.' });
+    res.status(400).json({ message: "Please provide a valid email address." });
     return;
   }
 
@@ -115,12 +109,20 @@ router.post("/login", isLoggedOut, (req, res, next) => {
         if (!isSamePassword) {
           return res.status(400).json({ errorMessage: "Wrong credentials." });
         }
-        req.session.user = user;
-        // req.session.user = user._id; // ! better and safer but in this case we saving the entire user object
-        return res.json(user);
+
+        const payload = {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+        };
+
+        const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
+          algorithm: "HS256",
+          expiresIn: "6h",
+        });
+        return res.json({ authToken: authToken });
       });
     })
-
     .catch((err) => {
       // in this case we are sending the error handling to the error handling middleware that is defined in the error handling file
       // you can just as easily run the res.status that is commented out below
