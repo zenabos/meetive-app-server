@@ -4,23 +4,23 @@ const topicSchema = new Schema(
   {
     title: {
         type: String,
-        required: true
+        // required: true
     },
     description: {
         type: String,
-        required: true
+        // required: true
     },
     introductionTime: {
       type: Number,
-      required: true
+      // required: true
     },
     discussionTime:{
         type: Number,
-        required: true
+        // required: true
     },
     conclusionTime: {
         type: Number,
-        required: true
+        // required: true
     },
     totalTime: {
       type: Number,
