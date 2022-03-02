@@ -21,12 +21,12 @@ const meetingSchema = new Schema(
     },
     endTime:{
         type: String,
-        required: true
     },
     invites: {
         type: [String],
         required: true
     },
+    owner: { type: Schema.Types.ObjectId, ref: 'User' },
     topics: [{ type: Schema.Types.ObjectId, ref: 'Task' }]
   },
   {
