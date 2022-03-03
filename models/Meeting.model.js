@@ -10,18 +10,14 @@ const meetingSchema = new Schema(
       type: String,
       // required: true
     },
-    date: {
+    start: {
       type: Date,
       default: Date.now,
       // required: true
     },
-    startTime: {
-      type: String,
-      // required: true
-    },
-    endTime: {
-      type: String,
-    },
+    // endTime: {
+    //   type: String,
+    // },
     invites: {
       type: [String],
       // required: true

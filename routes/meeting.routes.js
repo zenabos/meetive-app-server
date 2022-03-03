@@ -5,15 +5,14 @@ const Topic = require("../models/Topic.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 
-router.post("/", (req, res) => {
+router.post("/",isAuthenticated, (req, res) => {
   const meetingDetails = {
     title: req.body.title,
     goal: req.body.goal,
     description: req.body.description,
-    date: req.body.date,
-    startTime: req.body.startTime,
+    start: req.body.start,
     invites: req.body.invites,
-    owner: req.body.owner,
+    owner: req.payload._id,
     topics: [],
     };
 
