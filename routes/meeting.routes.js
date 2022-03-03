@@ -2,6 +2,8 @@ const router = require("express").Router();
 const mongoose = require("mongoose");
 const Meeting = require("../models/Meeting.model");
 const Topic = require("../models/Topic.model");
+const { isAuthenticated } = require("../middleware/jwt.middleware");
+
 
 router.post("/", (req, res) => {
   const meetingDetails = {
@@ -25,8 +27,8 @@ router.post("/", (req, res) => {
     });
 });
 
-router.get("/", (req, res) => {
-  Meeting.find()
+router.get("/", isAuthenticated, (req, res) => {
+  Meeting.find({owner: req.payload._id})
     .populate("topics")
     .then((allMeetings) => res.json(allMeetings))
     .catch((err) => {
