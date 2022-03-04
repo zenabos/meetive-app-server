@@ -25,9 +25,8 @@ const topicSchema = new Schema(
     totalTime: {
       type: Number,
     },
-    owner: {
-      type: String,
-    }
+    owner: { type: Schema.Types.ObjectId, ref: "User" },
+    meeting: { type: Schema.Types.ObjectId, ref: "Meeting" }
   },
   {
     timestamps: true,
