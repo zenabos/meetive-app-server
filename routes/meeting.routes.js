@@ -50,6 +50,8 @@ router.get("/:meetingId", (req, res, next) => {
     .catch((error) => res.json(error));
 });
 
+
+
 router.put("/:meetingId", (req, res, next) => {
   const { meetingId } = req.params;
 
@@ -83,6 +85,18 @@ router.delete("/:meetingId", (req, res, next) => {
       })
     )
     .catch((error) => res.status(500).json(error));
+});
+
+
+router.get("/:meetingId/topics", isAuthenticated, (req, res) => {
+  Topic.find({meeting: req.params.meetingId})
+    .then((result) => {
+      console.log(result)
+      res.json(result)})
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json("error finding meetings", err);
+    });
 });
 
 module.exports = router;
