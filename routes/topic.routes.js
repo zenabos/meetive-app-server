@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const mongoose = require("mongoose");
 const Topic = require("../models/Topic.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 const Meeting = require("../models/Meeting.model");
@@ -38,4 +39,37 @@ router.get("/", isAuthenticated, (req, res) => {
       res.status(500).json("error finding meetings", err);
     });
 });
+
+
+router.get("/:topicId", (req, res, next) => {
+  const { topicId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(topicId)) {
+    res.status(400).json({ message: "Specified id is not valid" });
+    return;
+  }
+
+  Topic.findById(topicId)
+    .populate("owner")
+    .then((topic) => res.status(200).json(topic))
+    .catch((error) => res.json(error));
+});
+
+router.delete("/:topicId", isAuthenticated, (req, res, next) => {
+  const { topicId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(topicId)) {
+    res.status(400).json({ message: "Specified id is not valid" });
+    return;
+  }
+
+Topic.findByIdAndRemove(topicId)
+    .then(() =>
+      res.json({
+        message: `Topic with ${topicId} is removed successfully.`,
+      })
+    )
+    .catch((error) => res.status(500).json(error));
+});
+
 module.exports = router;
