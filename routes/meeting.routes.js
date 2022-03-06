@@ -26,7 +26,9 @@ router.post("/", isAuthenticated, (req, res) => {
 });
 
 router.get("/", isAuthenticated, (req, res) => {
-  Meeting.find({ owner: req.payload._id })
+  Meeting.find({
+    $or: [{ owner: req.payload._id }, { invites: req.payload.email }],
+  })
     .populate("topics")
     .then((allMeetings) => res.json(allMeetings))
     .catch((err) => {
@@ -35,7 +37,17 @@ router.get("/", isAuthenticated, (req, res) => {
     });
 });
 
-router.get("/:meetingId", (req, res, next) => {
+router.get("/invitations", isAuthenticated, (req, res) => {
+  Meeting.find({ invites: req.payload.email })
+    .populate("topics")
+    .then((allMeetings) => res.json(allMeetings))
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json("error finding invitations", err);
+    });
+});
+
+router.get("/:meetingId", isAuthenticated, (req, res, next) => {
   const { meetingId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(meetingId)) {
@@ -44,12 +56,13 @@ router.get("/:meetingId", (req, res, next) => {
   }
 
   Meeting.findById(meetingId)
+    .populate("owner")
     .populate("topics")
     .then((meeting) => res.status(200).json(meeting))
     .catch((error) => res.json(error));
 });
 
-router.put("/:meetingId", (req, res, next) => {
+router.put("/:meetingId", isAuthenticated, (req, res, next) => {
   const { meetingId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(meetingId)) {
