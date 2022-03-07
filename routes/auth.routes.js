@@ -12,6 +12,21 @@ const saltRounds = 10;
 // Require the User model in order to interact with the database
 const User = require("../models/User.model");
 
+const generateToken = (user) => {
+  const payload = {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+  };
+
+  const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
+    algorithm: "HS256",
+    expiresIn: "6h",
+  });
+  
+  return authToken;
+}
+
 router.get("/loggedin", (req, res) => {
   res.json(req.user);
 });
@@ -69,7 +84,8 @@ router.post("/signup", (req, res) => {
         });
       })
       .then((user) => {
-        res.status(201).json(user);
+        const authToken = generateToken(user);
+        return res.json({ authToken: authToken });
       })
       .catch((error) => {
         if (error instanceof mongoose.Error.ValidationError) {
@@ -112,16 +128,8 @@ router.post("/login", (req, res, next) => {
           return res.status(400).json({ errorMessage: "Wrong credentials." });
         }
 
-        const payload = {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-        };
+        const authToken = generateToken(user);
 
-        const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
-          algorithm: "HS256",
-          expiresIn: "6h",
-        });
         return res.json({ authToken: authToken });
       });
     })
