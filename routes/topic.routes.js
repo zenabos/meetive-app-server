@@ -41,7 +41,7 @@ router.get("/", isAuthenticated, (req, res) => {
 });
 
 
-router.get("/:topicId", (req, res, next) => {
+router.get("/:topicId", isAuthenticated, (req, res, next) => {
   const { topicId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(topicId)) {

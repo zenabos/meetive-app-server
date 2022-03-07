@@ -37,6 +37,18 @@ router.get("/", isAuthenticated, (req, res) => {
     });
 });
 
+router.get("/my-meetings", isAuthenticated, (req, res) => {
+  Meeting.find({
+    $or: [{ owner: req.payload._id }],
+  })
+    .populate("topics")
+    .then((allMeetings) => res.json(allMeetings))
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json("error finding meetings", err);
+    });
+});
+
 router.get("/invitations", isAuthenticated, (req, res) => {
   Meeting.find({ invites: req.payload.email })
     .populate("topics")
