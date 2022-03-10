@@ -40,7 +40,6 @@ router.get("/", isAuthenticated, (req, res) => {
     });
 });
 
-
 router.get("/:topicId", isAuthenticated, (req, res, next) => {
   const { topicId } = req.params;
 
@@ -63,7 +62,12 @@ router.delete("/:topicId", isAuthenticated, (req, res, next) => {
     return;
   }
 
-Topic.findByIdAndRemove(topicId)
+  Topic.findByIdAndRemove(topicId)
+    .then((deletedTopic) => {
+      return Meeting.findByIdAndUpdate(deletedTopic.meeting, {
+        $pull: { topics: topicId },
+      });
+    })
     .then(() =>
       res.json({
         message: `Topic with ${topicId} is removed successfully.`,
