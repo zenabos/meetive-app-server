@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const Topic = require("../models/Topic.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 const Meeting = require("../models/Meeting.model");
+const isOwnerTopic = require("../middleware/isOwnerTopic");
+
 
 router.post("/", isAuthenticated, (req, res) => {
   const { meeting } = req.body;

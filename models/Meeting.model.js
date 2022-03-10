@@ -4,23 +4,24 @@ const meetingSchema = new Schema(
   {
     title: {
       type: String,
-      // required: true
+      required: true
     },
     goal: {
       type: String,
-      // required: true
+      required: true
     },
     start: {
       type: Date,
       default: Date.now,
-      // required: true
+      required: true
     },
-    // endTime: {
-    //   type: String,
-    // },
+    end: {
+      type: Date,
+      default: Date.now,
+      required: true
+    },
     invites: {
       type: [String],
-      // required: true
     },
     owner: { type: Schema.Types.ObjectId, ref: "User" },
     topics: [{ type: Schema.Types.ObjectId, ref: "Topic" }],

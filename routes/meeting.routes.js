@@ -3,12 +3,14 @@ const mongoose = require("mongoose");
 const Meeting = require("../models/Meeting.model");
 const Topic = require("../models/Topic.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
+const isOwner = require("../middleware/isOwner");
 
 router.post("/", isAuthenticated, (req, res) => {
   const meetingDetails = {
     title: req.body.title,
     goal: req.body.goal,
     start: req.body.start,
+    end: req.body.start,
     invites: req.body.invites,
     owner: req.payload._id,
     topics: [],
@@ -68,12 +70,14 @@ router.get("/:meetingId", isAuthenticated, (req, res, next) => {
     .populate("owner")
     .populate("topics")
     .then((meeting) => res.status(200).json(meeting))
-    .catch((error) => res.json(error));
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json("error finding meeting", err);
+    });
 });
 
-router.put("/:meetingId", isAuthenticated, (req, res, next) => {
+router.put("/:meetingId", isAuthenticated, isOwner, (req, res, next) => {
   const { meetingId } = req.params;
-
   if (!mongoose.Types.ObjectId.isValid(meetingId)) {
     res.status(400).json({ message: "Specified id is not valid" });
     return;
@@ -81,10 +85,29 @@ router.put("/:meetingId", isAuthenticated, (req, res, next) => {
 
   Meeting.findByIdAndUpdate(meetingId, req.body, { new: true })
     .then((updatedMeeting) => res.json(updatedMeeting))
-    .catch((error) => res.json(error));
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json("error updating meeting", err);
+    });
 });
 
-router.delete("/:meetingId", isAuthenticated, (req, res, next) => {
+router.put("/:meetingId/endTime", isAuthenticated, (req, res, next) => {
+  const { meetingId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(meetingId)) {
+    res.status(400).json({ message: "Specified id is not valid" });
+    return;
+  }
+
+  Meeting.findByIdAndUpdate(meetingId, { end: req.body.endTime }, { new: true })
+    .then((updatedMeeting) => res.json(updatedMeeting))
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json("error updating endtime", err);
+    });
+  });
+
+router.delete("/:meetingId", isAuthenticated, isOwner, (req, res, next) => {
   const { meetingId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(meetingId)) {
@@ -108,7 +131,6 @@ router.get("/:meetingId/topics", isAuthenticated, (req, res) => {
   Topic.find({ meeting: req.params.meetingId })
     .populate("owner")
     .then((result) => {
-      console.log(result);
       res.json(result);
     })
     .catch((err) => {

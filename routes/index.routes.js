@@ -3,7 +3,6 @@ const authRoutes = require("./auth.routes");
 const meetingRoutes = require("./meeting.routes");
 const topicRoutes = require("./topic.routes");
 
-/* GET home page */
 router.get("/", (req, res, next) => {
   res.json("All good in here");
 });

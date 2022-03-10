@@ -3,30 +3,29 @@ const { Schema, model } = require("mongoose");
 const topicSchema = new Schema(
   {
     title: {
-        type: String,
-        // required: true
+      type: String,
+      required: true,
     },
     description: {
-        type: String,
-        // required: true
+      type: String,
     },
     introductionTime: {
       type: Number,
-      // required: true
+      required: true,
     },
-    discussionTime:{
-        type: Number,
-        // required: true
+    discussionTime: {
+      type: Number,
+      required: true,
     },
     conclusionTime: {
-        type: Number,
-        // required: true
+      type: Number,
+      required: true,
     },
     totalTime: {
       type: Number,
     },
     owner: { type: Schema.Types.ObjectId, ref: "User" },
-    meeting: { type: Schema.Types.ObjectId, ref: "Meeting" }
+    meeting: { type: Schema.Types.ObjectId, ref: "Meeting" },
   },
   {
     timestamps: true,
