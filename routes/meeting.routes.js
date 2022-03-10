@@ -76,7 +76,7 @@ router.get("/:meetingId", isAuthenticated, (req, res, next) => {
     });
 });
 
-router.put("/:meetingId", isAuthenticated, isOwner, (req, res, next) => {
+router.put("/:meetingId", isAuthenticated, (req, res, next) => {
   const { meetingId } = req.params;
   if (!mongoose.Types.ObjectId.isValid(meetingId)) {
     res.status(400).json({ message: "Specified id is not valid" });
@@ -105,9 +105,9 @@ router.put("/:meetingId/endTime", isAuthenticated, (req, res, next) => {
       console.log(err);
       res.status(500).json("error updating endtime", err);
     });
-  });
+});
 
-router.delete("/:meetingId", isAuthenticated, isOwner, (req, res, next) => {
+router.delete("/:meetingId", isAuthenticated, (req, res, next) => {
   const { meetingId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(meetingId)) {
