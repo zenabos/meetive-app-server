@@ -8,7 +8,6 @@ router.post("/", isAuthenticated, (req, res) => {
   const meetingDetails = {
     title: req.body.title,
     goal: req.body.goal,
-    description: req.body.description,
     start: req.body.start,
     invites: req.body.invites,
     owner: req.payload._id,
@@ -38,9 +37,7 @@ router.get("/", isAuthenticated, (req, res) => {
 });
 
 router.get("/my-meetings", isAuthenticated, (req, res) => {
-  Meeting.find({
-    $or: [{ owner: req.payload._id }],
-  })
+  Meeting.find({ owner: req.payload._id })
     .populate("topics")
     .then((allMeetings) => res.json(allMeetings))
     .catch((err) => {
