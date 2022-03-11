@@ -4,7 +4,7 @@ module.exports = (req, res, next) => {
   Topic.findById(req.params.topicId)
     .populate("owner")
     .then((topic) => {
-      if (topic.owner._id.toString() !== req.payload.user._id.toString()) {
+      if (topic.owner._id.toString() !== req.payload._id.toString()) {
         res.status(500).json("You are not the owner", err)
         return;
       }
